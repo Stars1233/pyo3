@@ -72,6 +72,9 @@ def _supported_interpreter_versions(
     min_minor = int(min_version.split(".")[1])
     max_minor = int(max_version.split(".")[1])
     versions = [f"{major}.{minor}" for minor in range(min_minor, max_minor + 1)]
+    # Add free-threaded builds for 3.13+
+    if python_impl == "cpython":
+        versions += [f"{major}.{minor}t" for minor in range(13, max_minor + 1)]
     return versions
 
 
@@ -98,9 +101,9 @@ def test_rust(session: nox.Session):
     if not FREE_THREADED_BUILD:
         _run_cargo_test(session, features="abi3")
     if "skip-full" not in session.posargs:
-        _run_cargo_test(session, features="full jiff-02")
+        _run_cargo_test(session, features="full jiff-02 time")
         if not FREE_THREADED_BUILD:
-            _run_cargo_test(session, features="abi3 full jiff-02")
+            _run_cargo_test(session, features="abi3 full jiff-02 time")
 
 
 @nox.session(name="test-py", venv_backend="none")
@@ -426,6 +429,10 @@ def docs(session: nox.Session) -> None:
 
     features = "full"
 
+    if get_rust_version()[:2] >= (1, 67):
+        # time needs MSRC 1.67+
+        features += ",time"
+
     if get_rust_version()[:2] >= (1, 70):
         # jiff needs MSRC 1.70+
         features += ",jiff-02"
@@ -725,7 +732,10 @@ def check_feature_powerset(session: nox.Session):
 
     cargo_toml = toml.loads((PYO3_DIR / "Cargo.toml").read_text())
 
-    EXPECTED_ABI3_FEATURES = {f"abi3-py3{ver.split('.')[1]}" for ver in PY_VERSIONS}
+    # free-threaded builds do not support ABI3 (yet)
+    EXPECTED_ABI3_FEATURES = {
+        f"abi3-py3{ver.split('.')[1]}" for ver in PY_VERSIONS if not ver.endswith("t")
+    }
 
     EXCLUDED_FROM_FULL = {
         "nightly",
@@ -813,8 +823,8 @@ def update_ui_tests(session: nox.Session):
     env["TRYBUILD"] = "overwrite"
     command = ["test", "--test", "test_compile_error"]
     _run_cargo(session, *command, env=env)
-    _run_cargo(session, *command, "--features=full,jiff-02", env=env)
-    _run_cargo(session, *command, "--features=abi3,full,jiff-02", env=env)
+    _run_cargo(session, *command, "--features=full,jiff-02,time", env=env)
+    _run_cargo(session, *command, "--features=abi3,full,jiff-02,time", env=env)
 
 
 @nox.session(name="test-introspection")
@@ -884,6 +894,10 @@ def _get_feature_sets() -> Generator[Tuple[str, ...], None, None]:
     if "wasm32-wasip1" not in cargo_target:
         # multiple-pymethods not supported on wasm
         features += ",multiple-pymethods"
+
+    if get_rust_version()[:2] >= (1, 67):
+        # time needs MSRC 1.67+
+        features += ",time"
 
     if get_rust_version()[:2] >= (1, 70):
         # jiff needs MSRC 1.70+
