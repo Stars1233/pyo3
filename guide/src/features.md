@@ -180,9 +180,26 @@ Adds a dependency on [num-complex](https://docs.rs/num-complex) and enables conv
 
 Adds a dependency on [num-rational](https://docs.rs/num-rational) and enables conversions into its [`Ratio`](https://docs.rs/num-rational/latest/num_rational/struct.Ratio.html) type.
 
+### `ordered-float`
+
+Adds a dependency on [ordered-float](https://docs.rs/ordered-float) and enables conversions between [ordered-float](https://docs.rs/ordered-float)'s types and Python:
+- [NotNan](https://docs.rs/ordered-float/latest/ordered_float/struct.NotNan.html) -> [`PyFloat`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyFloat.html)
+- [OrderedFloat](https://docs.rs/ordered-float/latest/ordered_float/struct.OrderedFloat.html) -> [`PyFloat`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyFloat.html)
+
 ### `rust_decimal`
 
 Adds a dependency on [rust_decimal](https://docs.rs/rust_decimal) and enables conversions into its [`Decimal`](https://docs.rs/rust_decimal/latest/rust_decimal/struct.Decimal.html) type.
+
+### `time`
+
+Adds a dependency on [time](https://docs.rs/time) and requires MSRV 1.67.1. Enables conversions between [time](https://docs.rs/time)'s types and Python:
+- [Date](https://docs.rs/time/0.3.38/time/struct.Date.html) -> [`PyDate`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyDate.html)
+- [Time](https://docs.rs/time/0.3.38/time/struct.Time.html) -> [`PyTime`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyTime.html)
+- [OffsetDateTime](https://docs.rs/time/0.3.38/time/struct.OffsetDateTime.html) -> [`PyDateTime`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyDateTime.html)
+- [PrimitiveDateTime](https://docs.rs/time/0.3.38/time/struct.PrimitiveDateTime.html) -> [`PyDateTime`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyDateTime.html)
+- [Duration](https://docs.rs/time/0.3.38/time/struct.Duration.html) -> [`PyDelta`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyDelta.html)
+- [UtcOffset](https://docs.rs/time/0.3.38/time/struct.UtcOffset.html) -> [`PyTzInfo`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyTzInfo.html)
+- [UtcDateTime](https://docs.rs/time/0.3.38/time/struct.UtcDateTime.html) -> [`PyDateTime`]({{#PYO3_DOCS_URL}}/pyo3/types/struct.PyDateTime.html)
 
 ### `serde`
 
