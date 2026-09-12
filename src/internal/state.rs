@@ -300,9 +300,9 @@ impl SuspendAttach {
 
 impl Drop for SuspendAttach {
     fn drop(&mut self) {
-        ATTACH_COUNT.with(|c| c.set(self.count));
         // SAFETY: tstate come from call to PyEval_SaveThread and it was not re-attached yet
         unsafe { ffi::PyEval_RestoreThread(self.tstate) };
+        ATTACH_COUNT.with(|c| c.set(self.count));
         // Update counts of `Py<T>` that were dropped while not attached.
         #[cfg(not(pyo3_disable_reference_pool))]
         {
